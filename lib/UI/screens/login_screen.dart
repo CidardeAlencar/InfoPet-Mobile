@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+//firebase
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+//
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -11,6 +15,79 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  //funciones
+  void signIn() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      // El inicio de sesión fue exitoso
+      User user = userCredential.user!;
+      print('Usuario autenticado: ${user.uid}');
+
+      // //doble autentificacion
+      // if (user.emailVerified) {
+      //   // El usuario ha iniciado sesión y su correo electrónico está verificado
+      //   DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+      //       .collection('users')
+      //       .doc(user.uid)
+      //       .get();
+      //   if (userSnapshot.exists) {
+      //     String role = userSnapshot.get('role');
+      //     final snackBar =
+      //         SnackBar(content: Text('Usuario autentificado correctamente.'));
+      //     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      //     // Redirigir a la pantalla correspondiente según el rol
+      //     if (role == 'Administrador') {
+      //       Navigator.pushReplacementNamed(context, '/admin');
+      //     } else if (role == 'Usuario') {
+      //       print('Es un usuario');
+      //       print('Usuario autenticado: ${user.email}');
+      //       Navigator.pushReplacementNamed(context, '/user');
+      //     }
+      //   }
+      // } else {
+      //   // El usuario no ha verificado su correo electrónico o el inicio de sesión ha fallado
+      //   final snackBar = SnackBar(content: Text('Usuario no verifico email.'));
+      //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      // }
+      // //doble autentificacion
+
+      //Navigator.pushReplacementNamed(context, '/admin');
+      // Consultar el rol del usuario en la base de datos
+
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (userSnapshot.exists) {
+        //String role = userSnapshot.get('role');
+        final snackBar =
+            SnackBar(content: Text('Usuario autentificado correctamente.'));
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        // Redirigir a la pantalla correspondiente según el rol
+        // if (role == 'admin') {
+        //   Navigator.pushReplacementNamed(context, '/admin');
+        // } else if (role == 'user') {
+        //   print('Es un usuario');
+        //   print('Usuario autenticado: ${user.email}');
+        //   Navigator.pushReplacementNamed(context, '/user');
+        // }
+        Navigator.pushNamed(context, '/gps');
+      }
+    } catch (e) {
+      final snackBar = SnackBar(content: Text('Error al iniciar sesión.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      print('Error al iniciar sesión: $e');
+    }
+  }
+  /////
 
   @override
   Widget build(BuildContext context) {

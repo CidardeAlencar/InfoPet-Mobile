@@ -3,7 +3,15 @@ import 'package:infopet/UI/screens/login_screen.dart';
 import 'package:infopet/UI/screens/main_screen.dart';
 import 'package:infopet/UI/screens/qr_screen.dart';
 
-void main() {
+//firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 

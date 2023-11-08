@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "929405354639",
+    "firebase_url": "https://infopetbo-default-rtdb.firebaseio.com",
+    "project_id": "infopetbo",
+    "storage_bucket": "infopetbo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929405354639:android:3c184034f2dad11b99a6fa",
+        "android_client_info": {
+          "package_name": "com.example.infopet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929405354639-po1skpsqikhil7kn97548d03mkkhfgqh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSlB3P1qvgpderGUc6K08GNjQWo3KAG-c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929405354639-c12gair2g3497d2qmifl6r5n9f79m1jl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "929405354639-3ihdrna2d3o93f3a51aljggcau5tq79s.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.infopet.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

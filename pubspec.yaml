@@ -40,6 +40,9 @@ dependencies:
   qr_code_scanner: ^1.0.1
   flutter_launcher_icons: ^0.13.1
   url_launcher: ^6.1.12
+  firebase_core: ^2.21.0
+  cloud_firestore: ^4.12.2
+  firebase_auth: ^4.12.1
 
 dev_dependencies:
   flutter_test:
