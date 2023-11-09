@@ -63,6 +63,9 @@ class _GPSScreenState extends State<GPSScreen> {
                     _currentLocation!.latitude!,
                     _currentLocation!.longitude!,
                   ),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueBlue,
+                  ),
                   infoWindow: InfoWindow(title: 'Tu ubicación actual'),
                 ),
               }
