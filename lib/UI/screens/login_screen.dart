@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
         //   print('Usuario autenticado: ${user.email}');
         //   Navigator.pushReplacementNamed(context, '/user');
         // }
-        Navigator.pushNamed(context, '/gps');
+        Navigator.pushReplacementNamed(context, '/gps');
       }
     } catch (e) {
       final snackBar = SnackBar(content: Text('Error al iniciar sesión.'));
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     InkWell(
                       onTap: () {
                         // Acción al presionar el botón
-                        //signIn();
+                        signIn();
                         print('Botón presionado');
                         // Agrega aquí la lógica adicional que deseas ejecutar al presionar el botón
                       },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:infopet/UI/screens/gps_screen.dart';
 import 'package:infopet/UI/screens/login_screen.dart';
 import 'package:infopet/UI/screens/main_screen.dart';
 import 'package:infopet/UI/screens/qr_screen.dart';
@@ -30,11 +31,12 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        //'/': (context) => LoginScreen(),
-        '/': (context) => MyHomePage(),
+        '/': (context) => GPSScreen(),
+        //'/': (context) => MyHomePage(),
         '/home': (context) => ManualQRScreen(),
         '/qr': (context) => QRViewExample(),
         '/login': (context) => LoginScreen(),
+        '/gps': (context) => GPSScreen(),
       },
       //home: const MyHomePage(),
     );
