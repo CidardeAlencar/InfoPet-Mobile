@@ -1,14 +1,13 @@
 // import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_launcher_icons/xml_templates.dart';
+// import 'package:flutter_launcher_icons/xml_templates.dart';
 //maps
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //lopcation
 import 'package:location/location.dart';
 //firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class GPSScreen extends StatefulWidget {
   final String userID;
@@ -53,74 +52,145 @@ class _GPSScreenState extends State<GPSScreen> {
 
   @override
   Widget build(BuildContext context) {
-    void showUserDataDialogUser(userId) {
-      showDialog(
+    // void showUserDataDialogUser(userId) {
+    //   showDialog(
+    //     context: context,
+    //     builder: (BuildContext context) {
+    //       return AlertDialog(
+    //         title: Text('Información del Usuario'),
+    //         content: Container(
+    //           width: double.maxFinite,
+    //           child: SingleChildScrollView(
+    //             child: Column(
+    //               mainAxisSize: MainAxisSize.min,
+    //               crossAxisAlignment: CrossAxisAlignment.start,
+    //               children: [
+    //                 FutureBuilder<DocumentSnapshot>(
+    //                   future: FirebaseFirestore.instance
+    //                       .collection('users')
+    //                       .doc(userId)
+    //                       .get(),
+    //                   builder: (BuildContext context,
+    //                       AsyncSnapshot<DocumentSnapshot> snapshot) {
+    //                     if (snapshot.connectionState ==
+    //                         ConnectionState.waiting) {
+    //                       return Center(
+    //                         child: CircularProgressIndicator(),
+    //                       );
+    //                     }
+    //                     if (snapshot.hasError) {
+    //                       return Text('Error al obtener los datos del usuario');
+    //                     }
+    //                     if (!snapshot.hasData || !snapshot.data!.exists) {
+    //                       return Text(
+    //                           'No se encontró el usuario en Cloud Firestore');
+    //                     }
+
+    //                     // Accede a los campos de los datos del usuario
+    //                     String apellido_materno =
+    //                         snapshot.data!['apellido_materno'];
+    //                     String apellido_paterno =
+    //                         snapshot.data!['apellido_paterno'];
+    //                     String celular = snapshot.data!['celular'];
+    //                     String nombres = snapshot.data!['nombres'];
+    //                     String email = snapshot.data!['email'];
+
+    //                     return Column(
+    //                       mainAxisSize: MainAxisSize.min,
+    //                       crossAxisAlignment: CrossAxisAlignment.start,
+    //                       children: [
+    //                         Text('Apellido Paterno: $apellido_paterno'),
+    //                         Text('Apellido Materno: $apellido_materno'),
+    //                         Text('Nombres: $nombres'),
+    //                         Text('Email: $email '),
+    //                         Text('Número de celular: $celular'),
+    //                       ],
+    //                     );
+    //                   },
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         ),
+    //         actions: [
+    //           TextButton(
+    //             child: Text('Cerrar'),
+    //             onPressed: () {
+    //               Navigator.of(context).pop();
+    //             },
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   );
+    // }
+
+    void showUserDataBottomSheet(userId) {
+      showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Información del Usuario'),
-            content: Container(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FutureBuilder<DocumentSnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(userId)
-                          .get(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<DocumentSnapshot> snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return Text('Error al obtener los datos del usuario');
-                        }
-                        if (!snapshot.hasData || !snapshot.data!.exists) {
-                          return Text(
-                              'No se encontró el usuario en Cloud Firestore');
-                        }
+          return SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              // decoration: BoxDecoration(
+              //   color: Colors.orange,
+              //   borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+              // ),
+              child: FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Error al obtener los datos del usuario');
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Text('No se encontró el usuario en Cloud Firestore');
+                  }
 
-                        // Accede a los campos de los datos del usuario
-                        String apellido_materno =
-                            snapshot.data!['apellido_materno'];
-                        String apellido_paterno =
-                            snapshot.data!['apellido_paterno'];
-                        String celular = snapshot.data!['celular'];
-                        String nombres = snapshot.data!['nombres'];
-                        String email = snapshot.data!['email'];
+                  // Accede a los campos de los datos del usuario
+                  String apellido_materno = snapshot.data!['apellido_materno'];
+                  String apellido_paterno = snapshot.data!['apellido_paterno'];
+                  String celular = snapshot.data!['celular'];
+                  String nombres = snapshot.data!['nombres'];
+                  String email = snapshot.data!['email'];
 
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Apellido Paterno: $apellido_paterno'),
-                            Text('Apellido Materno: $apellido_materno'),
-                            Text('Nombres: $nombres'),
-                            Text('Email: $email '),
-                            Text('Número de celular: $celular'),
-                          ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                child: Text('Cerrar'),
-                onPressed: () {
-                  Navigator.of(context).pop();
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ListTile(
+                        title: Text('Apellido Paterno'),
+                        subtitle: Text(apellido_paterno),
+                      ),
+                      ListTile(
+                        title: Text('Apellido Materno'),
+                        subtitle: Text(apellido_materno),
+                      ),
+                      ListTile(
+                        title: Text('Nombres'),
+                        subtitle: Text(nombres),
+                      ),
+                      ListTile(
+                        title: Text('Email'),
+                        subtitle: Text(email),
+                      ),
+                      ListTile(
+                        title: Text('Número de celular'),
+                        subtitle: Text(celular),
+                      ),
+                    ],
+                  );
                 },
               ),
-            ],
+            ),
           );
         },
       );
@@ -138,7 +208,8 @@ class _GPSScreenState extends State<GPSScreen> {
             icon: Icon(Icons.person),
             onPressed: () {
               //showUserDataDialog('5j4qcd9NIRzGGKly5Y1f');
-              showUserDataDialogUser(widget.userID);
+              //showUserDataDialogUser(widget.userID);
+              showUserDataBottomSheet(widget.userID);
             },
           ),
           const SizedBox(
