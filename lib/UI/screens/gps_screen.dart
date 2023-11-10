@@ -1,6 +1,7 @@
 // import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/xml_templates.dart';
 //maps
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //lopcation
@@ -58,43 +59,59 @@ class _GPSScreenState extends State<GPSScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Información del Usuario'),
-            content: FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(userId)
-                  .get(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error al obtener los datos del usuario');
-                }
-                if (!snapshot.hasData || !snapshot.data!.exists) {
-                  return Text('No se encontró el usuario en Cloud Firestore');
-                }
-
-                // Accede a los campos de los datos del usuario
-
-                String apellido_materno = snapshot.data!['apellido_materno'];
-                String apellido_paterno = snapshot.data!['apellido_paterno'];
-                String celular = snapshot.data!['celular'];
-                String nombres = snapshot.data!['nombres'];
-                String email = snapshot.data!['email'];
-
-                return Column(
+            content: Container(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Apellido Paterno: $apellido_paterno'),
-                    Text('Apellido Materno: $apellido_materno'),
-                    Text('Nombres: $nombres'),
-                    Text('Email: $email '),
-                    Text('Número de celular: $celular'),
+                    FutureBuilder<DocumentSnapshot>(
+                      future: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(userId)
+                          .get(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<DocumentSnapshot> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return Text('Error al obtener los datos del usuario');
+                        }
+                        if (!snapshot.hasData || !snapshot.data!.exists) {
+                          return Text(
+                              'No se encontró el usuario en Cloud Firestore');
+                        }
+
+                        // Accede a los campos de los datos del usuario
+                        String apellido_materno =
+                            snapshot.data!['apellido_materno'];
+                        String apellido_paterno =
+                            snapshot.data!['apellido_paterno'];
+                        String celular = snapshot.data!['celular'];
+                        String nombres = snapshot.data!['nombres'];
+                        String email = snapshot.data!['email'];
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Apellido Paterno: $apellido_paterno'),
+                            Text('Apellido Materno: $apellido_materno'),
+                            Text('Nombres: $nombres'),
+                            Text('Email: $email '),
+                            Text('Número de celular: $celular'),
+                          ],
+                        );
+                      },
+                    ),
                   ],
-                );
-              },
+                ),
+              ),
             ),
             actions: [
               TextButton(
@@ -193,8 +210,17 @@ class _GPSScreenState extends State<GPSScreen> {
           alignment: Alignment.bottomCenter,
           child: FloatingActionButton.extended(
             onPressed: _goToTheLake,
-            label: const Text('Ver Mascota!'),
-            icon: const Icon(Icons.pets),
+            label: const Text(
+              'Ver Mascota!',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            icon: const Icon(
+              Icons.pets,
+              color: Colors.white,
+            ),
+            backgroundColor: Color(0xFFFF8820),
           ),
         ),
       ),
