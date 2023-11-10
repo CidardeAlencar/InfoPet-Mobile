@@ -79,7 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
         //   print('Usuario autenticado: ${user.email}');
         //   Navigator.pushReplacementNamed(context, '/user');
         // }
-        Navigator.pushReplacementNamed(context, '/gps');
+        Navigator.pushReplacementNamed(context, '/gps',
+            arguments: {'userId': user.uid});
       }
     } catch (e) {
       final snackBar = SnackBar(content: Text('Error al iniciar sesión.'));

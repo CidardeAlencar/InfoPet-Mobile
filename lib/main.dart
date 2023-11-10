@@ -31,12 +31,12 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => GPSScreen(),
+        '/': (context) => GPSScreen(userID: 'IW8PL5tEhnP4FwwYtJ6uPfmbyPG2'),
         //'/': (context) => MyHomePage(),
         '/home': (context) => ManualQRScreen(),
         '/qr': (context) => QRViewExample(),
         '/login': (context) => LoginScreen(),
-        '/gps': (context) => GPSScreen(),
+        //'/gps': (context) => GPSScreen(),
       },
       //home: const MyHomePage(),
     );
