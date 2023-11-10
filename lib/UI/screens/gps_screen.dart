@@ -125,6 +125,7 @@ class _GPSScreenState extends State<GPSScreen> {
     //   );
     // }
 
+    //obtener datos usuario
     void showUserDataBottomSheet(userId) {
       showModalBottomSheet(
         context: context,
@@ -166,24 +167,171 @@ class _GPSScreenState extends State<GPSScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          'Detalles del Usuario',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       ListTile(
-                        title: Text('Apellido Paterno'),
+                        title: Text(
+                          'Apellido Paterno',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         subtitle: Text(apellido_paterno),
                       ),
                       ListTile(
-                        title: Text('Apellido Materno'),
+                        title: Text(
+                          'Apellido Materno',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFF8820),
+                          ),
+                        ),
                         subtitle: Text(apellido_materno),
                       ),
                       ListTile(
-                        title: Text('Nombres'),
+                        title: Text(
+                          'Nombres',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         subtitle: Text(nombres),
                       ),
                       ListTile(
-                        title: Text('Email'),
+                        title: Text(
+                          'Email',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         subtitle: Text(email),
                       ),
                       ListTile(
-                        title: Text('Número de celular'),
+                        title: Text(
+                          'Número de celular',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(celular),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          );
+        },
+      );
+    }
+    //fin obtener datos usuario
+
+    //obtener datos mascotas
+    void showPetDataBottomSheet(userId) {
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              // decoration: BoxDecoration(
+              //   color: Colors.orange,
+              //   borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+              // ),
+              child: FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(userId)
+                    .get(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Error al obtener los datos del usuario');
+                  }
+                  if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return Text('No se encontró el usuario en Cloud Firestore');
+                  }
+
+                  // Accede a los campos de los datos del usuario
+                  String apellido_materno = snapshot.data!['apellido_materno'];
+                  String apellido_paterno = snapshot.data!['apellido_paterno'];
+                  String celular = snapshot.data!['celular'];
+                  String nombres = snapshot.data!['nombres'];
+                  String email = snapshot.data!['email'];
+
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text(
+                          'Detalles del Usuario',
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Apellido Paterno',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(apellido_paterno),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Apellido Materno',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFF8820),
+                          ),
+                        ),
+                        subtitle: Text(apellido_materno),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Nombres',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(nombres),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Email',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        subtitle: Text(email),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Número de celular',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         subtitle: Text(celular),
                       ),
                     ],
@@ -196,6 +344,7 @@ class _GPSScreenState extends State<GPSScreen> {
       );
     }
 
+    //fin obtener datos masocta
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
