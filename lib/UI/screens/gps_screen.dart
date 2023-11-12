@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 //firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class GPSScreen extends StatefulWidget {
   final String userID;
@@ -25,15 +26,16 @@ class _GPSScreenState extends State<GPSScreen> {
   @override
   void initState() {
     super.initState();
-    // Solicita permiso para acceder a la ubicación
     location.requestPermission().then((granted) {
       if (granted == PermissionStatus.granted) {
         // Obtiene la ubicación actual
         //location.getLocation().then((locationData) {
         location.onLocationChanged.listen((LocationData locationData) {
-          setState(() {
-            _currentLocation = locationData;
-          });
+          if (mounted) {
+            setState(() {
+              _currentLocation = locationData;
+            });
+          }
         });
       }
     });
@@ -52,79 +54,6 @@ class _GPSScreenState extends State<GPSScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // void showUserDataDialogUser(userId) {
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         title: Text('Información del Usuario'),
-    //         content: Container(
-    //           width: double.maxFinite,
-    //           child: SingleChildScrollView(
-    //             child: Column(
-    //               mainAxisSize: MainAxisSize.min,
-    //               crossAxisAlignment: CrossAxisAlignment.start,
-    //               children: [
-    //                 FutureBuilder<DocumentSnapshot>(
-    //                   future: FirebaseFirestore.instance
-    //                       .collection('users')
-    //                       .doc(userId)
-    //                       .get(),
-    //                   builder: (BuildContext context,
-    //                       AsyncSnapshot<DocumentSnapshot> snapshot) {
-    //                     if (snapshot.connectionState ==
-    //                         ConnectionState.waiting) {
-    //                       return Center(
-    //                         child: CircularProgressIndicator(),
-    //                       );
-    //                     }
-    //                     if (snapshot.hasError) {
-    //                       return Text('Error al obtener los datos del usuario');
-    //                     }
-    //                     if (!snapshot.hasData || !snapshot.data!.exists) {
-    //                       return Text(
-    //                           'No se encontró el usuario en Cloud Firestore');
-    //                     }
-
-    //                     // Accede a los campos de los datos del usuario
-    //                     String apellido_materno =
-    //                         snapshot.data!['apellido_materno'];
-    //                     String apellido_paterno =
-    //                         snapshot.data!['apellido_paterno'];
-    //                     String celular = snapshot.data!['celular'];
-    //                     String nombres = snapshot.data!['nombres'];
-    //                     String email = snapshot.data!['email'];
-
-    //                     return Column(
-    //                       mainAxisSize: MainAxisSize.min,
-    //                       crossAxisAlignment: CrossAxisAlignment.start,
-    //                       children: [
-    //                         Text('Apellido Paterno: $apellido_paterno'),
-    //                         Text('Apellido Materno: $apellido_materno'),
-    //                         Text('Nombres: $nombres'),
-    //                         Text('Email: $email '),
-    //                         Text('Número de celular: $celular'),
-    //                       ],
-    //                     );
-    //                   },
-    //                 ),
-    //               ],
-    //             ),
-    //           ),
-    //         ),
-    //         actions: [
-    //           TextButton(
-    //             child: Text('Cerrar'),
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //             },
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    // }
-
     //obtener datos usuario
     void showUserDataBottomSheet(userId) {
       showModalBottomSheet(
@@ -435,10 +364,6 @@ class _GPSScreenState extends State<GPSScreen> {
                                   ),
                                   subtitle: Text('${fechaL.toLocal()}'),
                                 ),
-                                // const Divider(
-                                //   color: Color(0xFFFF8820),
-                                //   thickness: 3,
-                                // ),
                               ],
                             );
                           },
@@ -452,24 +377,20 @@ class _GPSScreenState extends State<GPSScreen> {
         },
       );
     }
-
     //fin obtener datos masocta
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
         elevation: 0,
         title: Image.asset('assets/logo.png', width: 220),
-
         actions: [
           IconButton(
-            //icon: Image.asset('assets/icon _info circle.png'),
             icon: Icon(
               Icons.person,
               color: Color(0xFFFF8820),
             ),
             onPressed: () {
-              //showUserDataDialog('5j4qcd9NIRzGGKly5Y1f');
-              //showUserDataDialogUser(widget.userID);
               showUserDataBottomSheet(widget.userID);
             },
           ),
@@ -477,40 +398,27 @@ class _GPSScreenState extends State<GPSScreen> {
             width: 30,
           ),
           IconButton(
-            //icon: Image.asset('assets/icon _arrow circle right.png'),
             icon: Icon(
               Icons.pets,
               color: Color(0xFFFF8820),
             ),
             onPressed: () {
-              // Add your close functionality here
               showPetDataBottomSheet(widget.userID);
-              //Navigator.pushReplacementNamed(context, '/user');
-              //Navigator.pop(context);
             },
           ),
           const SizedBox(
             width: 30,
           ),
           IconButton(
-            //icon: Image.asset('assets/icon _close circle.png'),
             icon: Icon(
-              Icons.gps_fixed,
+              Icons.exit_to_app,
               color: Color(0xFFFF8820),
             ),
-            onPressed: () {},
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pop(context);
+            },
           ),
-          // const SizedBox(
-          //   width: 30,
-          // ),
-          // IconButton(
-          //   //icon: Image.asset('assets/icon _close circle.png'),
-          //   icon: Icon(Icons.exit_to_app),
-          //   onPressed: () {
-          //     // Add your close functionality here
-          //     exit(0);
-          //   },
-          // ),
         ],
         leadingWidth: 100,
         centerTitle: true,
@@ -555,7 +463,7 @@ class _GPSScreenState extends State<GPSScreen> {
               ),
             ),
             icon: const Icon(
-              Icons.pets,
+              Icons.gps_fixed,
               color: Colors.white,
             ),
             backgroundColor: Color(0xFFFF8820),
@@ -568,5 +476,10 @@ class _GPSScreenState extends State<GPSScreen> {
   Future<void> _goToTheLake() async {
     final GoogleMapController controller = await _controller.future;
     await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
