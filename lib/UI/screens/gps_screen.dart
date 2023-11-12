@@ -40,8 +40,8 @@ class _GPSScreenState extends State<GPSScreen> {
   }
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(-16.5205315, -68.2066503),
-    zoom: 12.000,
+    target: LatLng(-16.5205315, -68.1166503),
+    zoom: 13.000,
   );
 
   static const CameraPosition _kLake = CameraPosition(
@@ -275,7 +275,7 @@ class _GPSScreenState extends State<GPSScreen> {
                     children: [
                       Container(
                         alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        padding: EdgeInsets.symmetric(vertical: 5.0),
                         child: Text(
                           'MASCOTAS',
                           style: TextStyle(
@@ -320,9 +320,28 @@ class _GPSScreenState extends State<GPSScreen> {
                                 mascotaSnapshot.data!['especie'];
                             String razaMascota = mascotaSnapshot.data!['raza'];
                             String sexoMascota = mascotaSnapshot.data!['sexo'];
-
+                            String imageUrl = mascotaSnapshot.data!['imagen'];
+                            //GPS Info
+                            String IMEIGPS = mascotaSnapshot.data!['IMEI'];
+                            int bateria = mascotaSnapshot.data!['bateria'];
+                            Timestamp fechaLimiteTimestamp =
+                                mascotaSnapshot.data!['fecha_limite'];
+                            DateTime fechaL = fechaLimiteTimestamp.toDate();
                             return Column(
                               children: [
+                                const Divider(
+                                  color: Color(0xFFFF8820),
+                                  thickness: 3,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Image.network(
+                                  imageUrl,
+                                  height: 250,
+                                  width: 190,
+                                  fit: BoxFit.cover,
+                                ),
                                 ListTile(
                                   title: Text(
                                     'Nombre',
@@ -383,6 +402,43 @@ class _GPSScreenState extends State<GPSScreen> {
                                   ),
                                   subtitle: Text(razaMascota),
                                 ),
+                                const Divider(
+                                  thickness: 2,
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    'IMEI',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFFF8820),
+                                    ),
+                                  ),
+                                  subtitle: Text(IMEIGPS),
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    'Nivel de Batería',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFFF8820),
+                                    ),
+                                  ),
+                                  subtitle: Text('$bateria%'),
+                                ),
+                                ListTile(
+                                  title: Text(
+                                    'Fecha Límite',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFFF8820),
+                                    ),
+                                  ),
+                                  subtitle: Text('${fechaL.toLocal()}'),
+                                ),
+                                // const Divider(
+                                //   color: Color(0xFFFF8820),
+                                //   thickness: 3,
+                                // ),
                               ],
                             );
                           },
@@ -396,152 +452,6 @@ class _GPSScreenState extends State<GPSScreen> {
         },
       );
     }
-
-    // void showPetDataBottomSheet(userId) {
-    //   showModalBottomSheet(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return SingleChildScrollView(
-    //         child: Container(
-    //           padding: EdgeInsets.all(16.0),
-    //           child: FutureBuilder<DocumentSnapshot>(
-    //             future: FirebaseFirestore.instance
-    //                 .collection('users')
-    //                 .doc(userId)
-    //                 .get(),
-    //             builder: (BuildContext context,
-    //                 AsyncSnapshot<DocumentSnapshot> snapshot) {
-    //               if (snapshot.connectionState == ConnectionState.waiting) {
-    //                 return Center(
-    //                   child: CircularProgressIndicator(),
-    //                 );
-    //               }
-    //               if (snapshot.hasError) {
-    //                 return Text('Error al obtener los datos del usuario');
-    //               }
-    //               if (!snapshot.hasData || !snapshot.data!.exists) {
-    //                 return Text('No se encontró el usuario en Cloud Firestore');
-    //               }
-
-    //               List<dynamic> idsMascotas = snapshot.data!['id_mascota'];
-
-    //                   return Column(
-    //                     mainAxisSize: MainAxisSize.min,
-    //                     crossAxisAlignment: CrossAxisAlignment.start,
-    //                     children: [
-    //                       Container(
-    //                         alignment: Alignment.center,
-    //                         padding: EdgeInsets.symmetric(vertical: 16.0),
-    //                         child: Text(
-    //                           'MASCOTAS',
-    //                           style: TextStyle(
-    //                             fontSize: 24.0,
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                       ),
-    //                     for (var idMascota in idsMascotas)
-    //                       FutureBuilder<DocumentSnapshot>(
-    //                         future: FirebaseFirestore.instance
-    //                             .collection('mascotas')
-    //                             .doc(idMascota)
-    //                             .get(),
-    //                         builder: (BuildContext context,
-    //                             AsyncSnapshot<DocumentSnapshot> mascotaSnapshot) {
-    //                           if (mascotaSnapshot.connectionState ==
-    //                               ConnectionState.waiting) {
-    //                             return Center(
-    //                               child: CircularProgressIndicator(),
-    //                             );
-    //                           }
-    //                           if (mascotaSnapshot.hasError) {
-    //                             return Text('Error al obtener los datos de la mascota');
-    //                           }
-    //                           if (!mascotaSnapshot.hasData ||
-    //                               !mascotaSnapshot.data!.exists) {
-    //                             return Text(
-    //                                 'No se encontró la mascota en Cloud Firestore');
-    //                           }
-
-    //                           // Accede a los campos de los datos de la mascota
-    //                           String nombreMascota = mascotaSnapshot.data!['nombre'];
-    //                           String colorMascota = mascotaSnapshot.data!['color'];
-    //                           String edadMascota = mascotaSnapshot.data!['edad_meses'];
-    //                           String especieMascota = mascotaSnapshot.data!['especie'];
-    //                           String razaMascota = mascotaSnapshot.data!['raza'];
-    //                           String sexoMascota = mascotaSnapshot.data!['sexo'];
-    //                       return ListTile(
-    //                         title: Text(
-    //                           'Nombre',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(nombreMascota),
-    //                       ),
-    //                       ListTile(
-    //                         title: Text(
-    //                           'Edad',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(edadMascota),
-    //                       ),
-    //                       ListTile(
-    //                         title: Text(
-    //                           'Sexo',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(sexoMascota),
-    //                       ),
-    //                       ListTile(
-    //                         title: Text(
-    //                           'Color',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(colorMascota),
-    //                       ),
-    //                       ListTile(
-    //                         title: Text(
-    //                           'Especie',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(especieMascota),
-    //                       ),
-    //                       ListTile(
-    //                         title: Text(
-    //                           'Raza',
-    //                           style: TextStyle(
-    //                             fontWeight: FontWeight.bold,
-    //                             color: Color(0xFFFF8820),
-    //                           ),
-    //                         ),
-    //                         subtitle: Text(razaMascota),
-    //                       ),
-    //                     ],
-    //                   );
-    //                 },
-    //               );
-    //             },
-    //           ),
-    //         ),
-    //       );
-    //     },
-    //   );
-    // }
 
     //fin obtener datos masocta
     return Scaffold(
@@ -623,7 +533,7 @@ class _GPSScreenState extends State<GPSScreen> {
                     _currentLocation!.longitude!,
                   ),
                   icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueBlue,
+                    BitmapDescriptor.hueOrange,
                   ),
                   infoWindow: InfoWindow(title: 'Tu ubicación actual'),
                 ),
