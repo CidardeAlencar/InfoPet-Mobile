@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:infopet/UI/screens/gps_screen.dart';
 import 'package:infopet/UI/screens/login_screen.dart';
 import 'package:infopet/UI/screens/main_screen.dart';
 import 'package:infopet/UI/screens/qr_screen.dart';

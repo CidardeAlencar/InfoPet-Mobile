@@ -19,6 +19,15 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
 
   //funciones
+  void sendSMS() async {
+    Telephony telephony = Telephony.instance;
+
+    await telephony.sendSms(
+      to: "59172057234",
+      message: "May the force be with you!",
+    );
+  }
+
   void signIn() async {
     String email = emailController.text;
     String password = passwordController.text;
@@ -32,10 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // El inicio de sesión fue exitoso
       User user = userCredential.user!;
       print('Usuario autenticado: ${user.uid}');
-      Telephony telephony = Telephony.instance;
 
-      await telephony.sendSms(
-          to: "59172057234", message: "May the force be with you!");
       // //doble autentificacion
       // if (user.emailVerified) {
       //   // El usuario ha iniciado sesión y su correo electrónico está verificado
@@ -72,6 +78,9 @@ class _LoginScreenState extends State<LoginScreen> {
           .doc(user.uid)
           .get();
       if (userSnapshot.exists) {
+        //
+        sendSMS();
+        //
         //String role = userSnapshot.get('role');
         final snackBar =
             SnackBar(content: Text('Usuario autentificado correctamente.'));
