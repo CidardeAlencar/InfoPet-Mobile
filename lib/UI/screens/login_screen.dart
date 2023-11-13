@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:telephony/telephony.dart';
 //firebase
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:infopet/UI/screens/gps_screen.dart';
 
 //
 class LoginScreen extends StatefulWidget {
@@ -30,7 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
       // El inicio de sesión fue exitoso
       User user = userCredential.user!;
       print('Usuario autenticado: ${user.uid}');
+      Telephony telephony = Telephony.instance;
 
+      await telephony.sendSms(
+          to: "59172057234", message: "May the force be with you!");
       // //doble autentificacion
       // if (user.emailVerified) {
       //   // El usuario ha iniciado sesión y su correo electrónico está verificado
@@ -79,8 +84,14 @@ class _LoginScreenState extends State<LoginScreen> {
         //   print('Usuario autenticado: ${user.email}');
         //   Navigator.pushReplacementNamed(context, '/user');
         // }
-        Navigator.pushReplacementNamed(context, '/gps',
-            arguments: {'userId': user.uid});
+        // Navigator.pushReplacementNamed(context, '/gps',
+        //     arguments: {'userId': user.uid});
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GPSScreen(userID: user.uid),
+          ),
+        );
       }
     } catch (e) {
       final snackBar = SnackBar(content: Text('Error al iniciar sesión.'));
@@ -89,6 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
   /////
+  //SMS
+
+  ///
 
   @override
   Widget build(BuildContext context) {
@@ -115,11 +129,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
-                        hintText: "Numero de IMEI",
+                        hintText: "Correo electronico",
                         filled: true,
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        prefixIcon: const Icon(Icons.numbers),
+                        prefixIcon: const Icon(Icons.email),
                       ),
                     ),
                     const SizedBox(
@@ -183,34 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-
-                    // TextFormField(
-                    //     // //controller: numberOneController,
-                    //     // decoration: const InputDecoration(
-                    //     //   filled: true,
-                    //     //   hintText: "Nombre de usuario",
-                    //     //   // icon: Icon(Icons.input_sharp,
-                    //     //   //     color: const Color.fromARGB(255, 255, 255, 255),
-                    //     //   //     size: 36),
-                    //     //   focusColor:
-                    //     //       const Color.fromARGB(255, 255, 255, 255),
-                    //     // ),
-                    //     // //cursorColor: const Color.fromARGB(255, 255, 255, 255),
-
-                    //     // //keyboardType: TextInputType.number,
-                    //     ),
                   ],
-                  // child: Center(
-
-                  //   child: Text(
-                  //     "hola",
-                  //     style: TextStyle(
-                  //         color: Color.fromARGB(255, 255, 255, 255),
-                  //         fontSize: 64,
-                  //         fontWeight: FontWeight.w500),
-                  //   ),
-
-                  // ),
                 ),
               ),
             ),

@@ -1,4 +1,3 @@
-// import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 // import 'package:flutter_launcher_icons/xml_templates.dart';
@@ -28,7 +27,6 @@ class _GPSScreenState extends State<GPSScreen> {
     super.initState();
     location.requestPermission().then((granted) {
       if (granted == PermissionStatus.granted) {
-        // Obtiene la ubicación actual
         //location.getLocation().then((locationData) {
         location.onLocationChanged.listen((LocationData locationData) {
           if (mounted) {
@@ -381,6 +379,7 @@ class _GPSScreenState extends State<GPSScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 80,
         elevation: 0,
         title: Image.asset('assets/logo.png', width: 220),
@@ -426,12 +425,11 @@ class _GPSScreenState extends State<GPSScreen> {
         backgroundColor: Colors.white,
       ),
       body: GoogleMap(
-        mapType: MapType.hybrid,
+        mapType: MapType.normal,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        // Muestra la ubicación actual si está disponible
         markers: _currentLocation != null
             ? {
                 Marker(
@@ -455,9 +453,9 @@ class _GPSScreenState extends State<GPSScreen> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: FloatingActionButton.extended(
-            onPressed: _goToTheLake,
+            onPressed: _goToThePet,
             label: const Text(
-              'Ver Mascota!',
+              'Ver Mascotas',
               style: TextStyle(
                 color: Colors.white,
               ),
@@ -473,7 +471,7 @@ class _GPSScreenState extends State<GPSScreen> {
     );
   }
 
-  Future<void> _goToTheLake() async {
+  Future<void> _goToThePet() async {
     final GoogleMapController controller = await _controller.future;
     await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
   }
