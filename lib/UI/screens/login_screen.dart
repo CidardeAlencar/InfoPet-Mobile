@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:telephony/telephony.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../utils/sendSMS.dart';
 //firebase
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +9,6 @@ import 'package:infopet/UI/screens/gps_screen.dart';
 //
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -18,14 +18,12 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  //funciones
-  void sendSMS() async {
-    Telephony telephony = Telephony.instance;
-
-    await telephony.sendSms(
-      to: "59172057234",
-      message: "May the force be with you!",
-    );
+  // Funciones
+  Future<void> requestPermissions() async {
+    var status = await Permission.sms.status;
+    if (status.isDenied) {
+      await Permission.sms.request();
+    }
   }
 
   void signIn() async {
@@ -79,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .get();
       if (userSnapshot.exists) {
         //
-        sendSMS();
+        await SmsUtil.sendSms("59172057234", "999");
         //
         //String role = userSnapshot.get('role');
         final snackBar =

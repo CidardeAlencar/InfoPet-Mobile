@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <application
         android:label="infopet"
         android:name="${applicationName}"
@@ -34,5 +37,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDqpZFLMVhSxOO0_O7HvnEGGxj-MLoBuks" />
+        <receiver android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
+		    android:permission="android.permission.BROADCAST_SMS" android:exported="true">
+		    <intent-filter>
+			<action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+		    </intent-filter>
+		</receiver>
     </application>
 </manifest>
