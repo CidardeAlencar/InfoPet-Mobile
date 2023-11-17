@@ -8,6 +8,13 @@ import 'package:location/location.dart';
 //firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+//sms
+import 'package:another_telephony/telephony.dart';
+
+@pragma('vm:entry-point')
+onBackgroundMessage(SmsMessage message) {
+  debugPrint("onBackgroundMessage called");
+}
 
 class GPSScreen extends StatefulWidget {
   final String userID;
@@ -22,9 +29,20 @@ class _GPSScreenState extends State<GPSScreen> {
       Completer<GoogleMapController>();
   LocationData? _currentLocation;
   Location location = Location();
+  //sms
+  final telephony = Telephony.instance;
+  String _message = "";
+  double? petLatitude;
+  double? petLongitude;
+  String? nombreMascota;
+  List<Marker> _markersList = [];
+  //
   @override
   void initState() {
     super.initState();
+    //sms
+    initPlatformState();
+    //
     location.requestPermission().then((granted) {
       if (granted == PermissionStatus.granted) {
         //location.getLocation().then((locationData) {
@@ -32,6 +50,22 @@ class _GPSScreenState extends State<GPSScreen> {
           if (mounted) {
             setState(() {
               _currentLocation = locationData;
+              // Add the current location marker when the map is created
+              if (_currentLocation != null) {
+                _markersList.add(
+                  Marker(
+                    markerId: MarkerId('currentLocation'),
+                    position: LatLng(
+                      _currentLocation!.latitude!,
+                      _currentLocation!.longitude!,
+                    ),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueOrange,
+                    ),
+                    infoWindow: InfoWindow(title: 'Tu ubicación actual'),
+                  ),
+                );
+              }
             });
           }
         });
@@ -39,16 +73,75 @@ class _GPSScreenState extends State<GPSScreen> {
     });
   }
 
+  //sms
+
+  onMessage(SmsMessage message) async {
+    if (message.body != null) {
+      extractAndShowCoordinates(message.body!);
+    }
+  }
+
+  Future<void> initPlatformState() async {
+    final bool? result = await telephony.requestPhoneAndSmsPermissions;
+
+    if (result != null && result) {
+      telephony.listenIncomingSms(
+          onNewMessage: onMessage, onBackgroundMessage: onBackgroundMessage);
+    }
+
+    if (!mounted) return;
+  }
+
+  void extractAndShowCoordinates(String smsBody) {
+    RegExp latLngRegExp = RegExp(r'lat=(-?\d+\.\d+)&lng=(-?\d+\.\d+)');
+    Match? match = latLngRegExp.firstMatch(smsBody);
+
+    if (match != null) {
+      double lat = double.parse(match.group(1)!);
+      double lng = double.parse(match.group(2)!);
+
+      setState(() {
+        petLatitude = lat;
+        petLongitude = lng;
+        _message = 'Latitud: $lat, Longitud: $lng';
+        print('$_message');
+        print('$_message');
+        //sms
+        // Add the pet marker immediately when coordinates are received
+        _markersList.add(
+          Marker(
+            markerId: MarkerId('petLocation${_markersList.length + 1}'),
+            position: LatLng(petLatitude!, petLongitude!),
+            infoWindow:
+                InfoWindow(title: 'Ubicación de la mascota $nombreMascota'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            ),
+          ),
+        );
+        //
+      });
+    } else {
+      setState(() {
+        petLatitude = null;
+        petLongitude = null;
+        _message = 'No se encontraron coordenadas en el mensaje SMS.';
+      });
+    }
+  }
+
+  //
+
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-16.5205315, -68.1166503),
     zoom: 13.000,
   );
 
-  static const CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(-16.5197865, -68.1101769),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+  // static const CameraPosition _kpet = CameraPosition(
+  //     bearing: 192.8334901395799,
+  //     target: LatLng(-16.5197865, -68.1101769),
+  //     tilt: 59.440717697143555,
+  //     zoom: 19.151926040649414);
 
   @override
   Widget build(BuildContext context) {
@@ -237,8 +330,7 @@ class _GPSScreenState extends State<GPSScreen> {
                               return Text(
                                   'No se encontró la mascota en Cloud Firestore');
                             }
-                            String nombreMascota =
-                                mascotaSnapshot.data!['nombre'];
+                            nombreMascota = mascotaSnapshot.data!['nombre'];
                             String colorMascota =
                                 mascotaSnapshot.data!['color'];
                             String edadMascota =
@@ -277,7 +369,7 @@ class _GPSScreenState extends State<GPSScreen> {
                                       color: Color(0xFFFF8820),
                                     ),
                                   ),
-                                  subtitle: Text(nombreMascota),
+                                  subtitle: Text('$nombreMascota'),
                                 ),
                                 ListTile(
                                   title: Text(
@@ -427,11 +519,12 @@ class _GPSScreenState extends State<GPSScreen> {
       body: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: _kGooglePlex,
+        markers: Set<Marker>.of(_markersList),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
-        },
-        markers: _currentLocation != null
-            ? {
+          if (_currentLocation != null) {
+            setState(() {
+              _markersList.add(
                 Marker(
                   markerId: MarkerId('currentLocation'),
                   position: LatLng(
@@ -443,8 +536,10 @@ class _GPSScreenState extends State<GPSScreen> {
                   ),
                   infoWindow: InfoWindow(title: 'Tu ubicación actual'),
                 ),
-              }
-            : {},
+              );
+            });
+          }
+        },
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(
@@ -471,9 +566,30 @@ class _GPSScreenState extends State<GPSScreen> {
     );
   }
 
+  // Future<void> _goToThePet() async {
+  //   final GoogleMapController controller = await _controller.future;
+  //   await controller.animateCamera(CameraUpdate.newCameraPosition(_kpet));
+  // }
   Future<void> _goToThePet() async {
     final GoogleMapController controller = await _controller.future;
-    await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
+
+    // Verificar si se tiene la ubicación de la mascota
+    if (petLatitude != null && petLongitude != null) {
+      // Animar la cámara hacia la ubicación de la mascota
+      await controller.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(petLatitude!, petLongitude!),
+            bearing: 192.8334901395799, // Set bearing value
+            tilt: 59.440717697143555, // Set tilt value
+            zoom: 19.151926040649414, // Set zoom value
+          ),
+        ),
+      );
+    } else {
+      // Si no hay ubicación de la mascota, mostrar un mensaje o realizar otra acción
+      print('No hay ubicación de la mascota.');
+    }
   }
 
   @override
