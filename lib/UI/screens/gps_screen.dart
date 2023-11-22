@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 // import 'package:flutter_launcher_icons/xml_templates.dart';
 //maps
@@ -37,11 +40,18 @@ class _GPSScreenState extends State<GPSScreen> {
   String? nombreMascota;
   List<Marker> _markersList = [];
   //
+  BitmapDescriptor? _pawIcon;
+  BitmapDescriptor? _profileIcon;
+  //
+
   @override
   void initState() {
     super.initState();
     //sms
     initPlatformState();
+    //
+    _loadMarkerImage();
+    _loadMarkerImage1();
     //
     location.requestPermission().then((granted) {
       if (granted == PermissionStatus.granted) {
@@ -52,6 +62,20 @@ class _GPSScreenState extends State<GPSScreen> {
               _currentLocation = locationData;
               // Add the current location marker when the map is created
               if (_currentLocation != null) {
+                // _markersList.add(
+                //   Marker(
+                //     markerId: MarkerId('currentLocation'),
+                //     position: LatLng(
+                //       _currentLocation!.latitude!,
+                //       _currentLocation!.longitude!,
+                //     ),
+                //     icon: BitmapDescriptor.defaultMarkerWithHue(
+                //       BitmapDescriptor.hueOrange,
+                //     ),
+                //     infoWindow: InfoWindow(title: 'Tu ubicación actual'),
+                //   ),
+                // );
+
                 _markersList.add(
                   Marker(
                     markerId: MarkerId('currentLocation'),
@@ -59,9 +83,13 @@ class _GPSScreenState extends State<GPSScreen> {
                       _currentLocation!.latitude!,
                       _currentLocation!.longitude!,
                     ),
-                    icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueOrange,
-                    ),
+                    // icon: BitmapDescriptor.defaultMarkerWithHue(
+                    //   BitmapDescriptor.hueOrange,
+                    // ),
+                    icon: _profileIcon != null
+                        ? _profileIcon!
+                        : BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueRed),
                     infoWindow: InfoWindow(title: 'Tu ubicación actual'),
                   ),
                 );
@@ -71,6 +99,52 @@ class _GPSScreenState extends State<GPSScreen> {
         });
       }
     });
+  }
+
+  Future<void> _loadMarkerImage() async {
+    final ByteData data = await rootBundle.load('assets/paw_icon.png');
+    final List<int> bytes = data.buffer.asUint8List();
+
+    Uint8List uint8List = Uint8List.fromList(bytes);
+
+    ui.Codec codec = await ui.instantiateImageCodec(uint8List,
+        targetHeight: 150, targetWidth: 150);
+    ui.FrameInfo frameInfo = await codec.getNextFrame();
+    ui.Image image = frameInfo.image;
+
+    final ByteData? resizedData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    if (resizedData != null) {
+      final Uint8List resizedBytes =
+          Uint8List.fromList(resizedData.buffer.asUint8List());
+
+      setState(() {
+        _pawIcon = BitmapDescriptor.fromBytes(resizedBytes);
+      });
+    }
+  }
+
+  Future<void> _loadMarkerImage1() async {
+    final ByteData data = await rootBundle.load('assets/profile_icon.png');
+    final List<int> bytes = data.buffer.asUint8List();
+
+    Uint8List uint8List = Uint8List.fromList(bytes);
+
+    ui.Codec codec = await ui.instantiateImageCodec(uint8List,
+        targetHeight: 150, targetWidth: 150);
+    ui.FrameInfo frameInfo = await codec.getNextFrame();
+    ui.Image image = frameInfo.image;
+
+    final ByteData? resizedData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
+    if (resizedData != null) {
+      final Uint8List resizedBytes =
+          Uint8List.fromList(resizedData.buffer.asUint8List());
+
+      setState(() {
+        _profileIcon = BitmapDescriptor.fromBytes(resizedBytes);
+      });
+    }
   }
 
   //sms
@@ -112,11 +186,14 @@ class _GPSScreenState extends State<GPSScreen> {
           Marker(
             markerId: MarkerId('petLocation${_markersList.length + 1}'),
             position: LatLng(petLatitude!, petLongitude!),
-            infoWindow:
-                InfoWindow(title: 'Ubicación de la mascota $nombreMascota'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRed,
-            ),
+            infoWindow: InfoWindow(title: 'Ubicación de la mascota'),
+            // icon: BitmapDescriptor.defaultMarkerWithHue(
+            //   BitmapDescriptor.hueRed,
+            // ),
+            icon: _pawIcon != null
+                ? _pawIcon!
+                : BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueOrange),
           ),
         );
         //
@@ -310,7 +387,7 @@ class _GPSScreenState extends State<GPSScreen> {
                       for (var idMascota in idsMascotas)
                         FutureBuilder<DocumentSnapshot>(
                           future: FirebaseFirestore.instance
-                              .collection('mascotas')
+                              .collection('cidar_pets')
                               .doc(idMascota)
                               .get(),
                           builder: (BuildContext context,

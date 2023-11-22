@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../utils/sendSMS.dart';
+import 'package:flutter/services.dart';
+
 //firebase
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
         email: email,
         password: password,
       );
-      // El inicio de sesión fue exitoso
       User user = userCredential.user!;
       print('Usuario autenticado: ${user.uid}');
 
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .get();
       if (userSnapshot.exists) {
         //
-        await SmsUtil.sendSms("59172057234", "999");
+        await SmsUtil.sendSms("59171242399", "999");
         //
         //String role = userSnapshot.get('role');
         final snackBar =
@@ -101,9 +102,34 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      final snackBar = SnackBar(content: Text('Error al iniciar sesión.'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      print('Error al iniciar sesión: $e');
+      if (e is FirebaseAuthException) {
+        if (e.code == 'wrong-password') {
+          // Contraseña incorrecta
+          print('Contraseña incorrecta para el usuario $email');
+          final snackBar = SnackBar(
+            content: Text(
+                'La contraseña ingresada es incorrecta. Por favor, inténtalo nuevamente.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else {
+          // Otro tipo de error
+          print('Error (${e.code}): ${e.message}');
+          final snackBar = SnackBar(
+            //content: Text('Error al iniciar sesión: ${e.message}'),
+            content: Text(
+                'El correo electronico ingresado es incorrecta. Por favor, inténtalo nuevamente.'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        // Otro tipo de error
+        print('Error: $e');
+        final snackBar = SnackBar(
+          content:
+              Text('Error al iniciar sesión. Por favor, inténtalo nuevamente.'),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
   /////

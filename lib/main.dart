@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:infopet/UI/screens/gps_screen.dart';
+// import 'package:infopet/UI/screens/gps_screen.dart';
 import 'package:infopet/UI/screens/login_screen.dart';
 import 'package:infopet/UI/screens/main_screen.dart';
 import 'package:infopet/UI/screens/qr_screen.dart';
@@ -31,8 +31,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => GPSScreen(userID: 'IW8PL5tEhnP4FwwYtJ6uPfmbyPG2'),
-        //'/': (context) => MyHomePage(),
+        //'/': (context) => GPSScreen(userID: 'IW8PL5tEhnP4FwwYtJ6uPfmbyPG2'),
+        '/': (context) => MyHomePage(),
         '/home': (context) => ManualQRScreen(),
         '/qr': (context) => QRViewExample(),
         '/login': (context) => LoginScreen(),

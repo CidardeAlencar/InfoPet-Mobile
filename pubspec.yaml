@@ -72,6 +72,8 @@ flutter:
   - assets/frame1.png
   - assets/frame2.png
   - assets/icon.png
+  - assets/paw_icon.png
+  - assets/profile_icon.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
